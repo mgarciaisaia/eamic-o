@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link href="css/jsxgraph-0.99.6.css" rel="stylesheet" />
+    <script type="text/javascript" src="js/lodash-4.17.4.min.js"></script>
+    <script type="text/javascript" src="js/jsxgraphcore-0.99.6.js"></script>
+    <script type="text/javascript" src="js/eamic-o.js"></script>
+  </head>
+  <body>
+    <h1>eAMIC-O™</h1>
+    <label for="decimales">Cantidad de decimales</label>
+    <input name="decimales" type="number" value="5" />
+    <div class="puntosDeEntrada">
+      <h2>Puntos de entrada</h2>
+      <table id="tablaDeDatos">
+        <thead>
+          <th>x</th>
+          <th>y</th>
+        </thead>
+        <tr id="filaNuevoPunto">
+          <td><input type="number" name="x" id="nuevoX" /></td>
+          <td><input type="number" name="y" id="nuevoY" /></td>
+        </tr>
+      </table>
+      <input type="button" id="agregarPunto" value="Agregar" />
+    </div>
+    <input type="button" value="Aproximar!" id="botonAproximar" />
+    <!-- <input type="text" id="input" value="sin(x)*x">
+    <input type="button" value="plot" onClick="plotter()">
+    <input type="button" value="clear all" onClick="clearAll()">
+    <input type="button" value="add tangent" onClick="addTangent()">
+    <input type="button" value="add Derivative" onClick="addDerivative()"> -->
+    <div id="jxgbox" class="jxgbox" style="width:500px; height:500px;"></div>
+  </body>
+</html>
