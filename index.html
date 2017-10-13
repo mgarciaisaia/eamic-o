@@ -5,6 +5,9 @@
     <script type="text/javascript" src="js/lodash-4.17.4.min.js"></script>
     <script type="text/javascript" src="js/jsxgraphcore-0.99.6.js"></script>
     <script type="text/javascript" src="js/eamic-o.js"></script>
+    <style>
+      #jxgbox_licenseText { display: none; }
+    </style>
   </head>
   <body>
     <h1>eAMIC-O™</h1>
@@ -16,20 +19,23 @@
         <thead>
           <th>x</th>
           <th>y</th>
+          <th>x<sup>2</sup></th>
+          <th>xy</th>
+          <th>ln(y)</th>
+          <th>x ln(y)</th>
+          <th>ȳ</th>
+          <th>(ȳ-y)<sup>2</sup></th>
         </thead>
         <tr id="filaNuevoPunto">
           <td><input type="number" name="x" id="nuevoX" /></td>
           <td><input type="number" name="y" id="nuevoY" /></td>
+          <td></td>
         </tr>
       </table>
       <input type="button" id="agregarPunto" value="Agregar" />
     </div>
-    <input type="button" value="Aproximar!" id="botonAproximar" />
-    <!-- <input type="text" id="input" value="sin(x)*x">
-    <input type="button" value="plot" onClick="plotter()">
-    <input type="button" value="clear all" onClick="clearAll()">
-    <input type="button" value="add tangent" onClick="addTangent()">
-    <input type="button" value="add Derivative" onClick="addDerivative()"> -->
+    <input type="button" value="Lineal" id="botonAproximarLineal" />
+    <input type="button" value="Cuadrado" id="botonAproximarCuadrado" />
     <div id="jxgbox" class="jxgbox" style="width:500px; height:500px;"></div>
   </body>
 </html>

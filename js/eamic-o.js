@@ -1,4 +1,4 @@
-var data = [];
+var puntos = [];
 
 var board;
 var f, curve; // global objects
@@ -17,42 +17,112 @@ window.addEventListener("load", function(event) {
   nuevoX = document.getElementById('nuevoX');
   nuevoY = document.getElementById('nuevoY');
 
-  document.getElementById('botonAproximar').addEventListener('click', aproximar);
+  document.getElementById('botonAproximarLineal').addEventListener('click', aproximarLineal);
+  document.getElementById('botonAproximarCuadrado').addEventListener('click', aproximarCuadratico);
 
-  [[1,1], [3,2], [4,4],[6,4], [8,5],[9,7],[11,8],[14,9]].forEach(agregarPunto);
+  // [[1,1], [3,2], [4,4],[6,4], [8, 5],[9,7],[11,8],[14,9]].forEach(agregarPunto);
 });
 
-var x = function(punto) {
-  return punto[0];
+var n = function() { return puntos.length; }
+var x = function(punto) { return punto[0]; }
+var y = function(punto) { return punto[1]; }
+var xElevadoA = function(exponente) { return function(punto) { return Math.pow(x(punto), exponente) } };
+var xCuadrado = xElevadoA(2);
+var xCubo = xElevadoA(3);
+var xCuarta = xElevadoA(4);
+var xPorY = function(punto) { return x(punto) * y(punto); }
+
+// Determinante de una matriz 3x3
+var determinante = function(a) {
+  return (
+    (a[0][0] * a[1][1] * a[2][2]) +
+    (a[0][1] * a[1][2] * a[2][0]) +
+    (a[0][2] * a[1][0] * a[2][1]) -
+    (a[0][2] * a[1][1] * a[2][0]) -
+    (a[0][1] * a[1][0] * a[2][2]) -
+    (a[0][0] * a[1][2] * a[2][1])
+  )
 }
 
-var y = function(punto) {
-  return punto[1];
+// Recibe una matriz 3x4 y devuelve una 3x3 con las primeras 3 columnas
+var d = function(a) {
+  return [
+    [ a[0][0], a[0][1], a[0][2] ],
+    [ a[1][0], a[1][1], a[1][2] ],
+    [ a[2][0], a[2][1], a[2][2] ]
+  ]
 }
 
-var n = function() {
-  return data.length;
+// Recibe una matriz 3x4 y devuelve una 3x3 con la 4ta columna en lugar de la 1ra
+var d1 = function(a) {
+  return [
+    [ a[0][3], a[0][1], a[0][2] ],
+    [ a[1][3], a[1][1], a[1][2] ],
+    [ a[2][3], a[2][1], a[2][2] ]
+  ]
 }
 
-var xCuadrado = function(punto) {
-  return x(punto) * x(punto);
+// Recibe una matriz 3x4 y devuelve una 3x3 con la 4ta columna en lugar de la 2da
+var d2 = function(a) {
+  return [
+    [ a[0][0], a[0][3], a[0][2] ],
+    [ a[1][0], a[1][3], a[1][2] ],
+    [ a[2][0], a[2][3], a[2][2] ]
+  ]
 }
 
-var xPorY = function(punto) {
-  return x(punto) * y(punto);
+// Recibe una matriz 3x4 y devuelve una 3x3 con la 4ta columna en lugar de la 3ra
+var d3 = function(a) {
+  return [
+    [ a[0][0], a[0][1], a[0][3] ],
+    [ a[1][0], a[1][1], a[1][3] ],
+    [ a[2][0], a[2][1], a[2][3] ]
+  ]
 }
 
-var aproximar = function() {
-  var sumaXCuadrados = _.sum(_.map(data, xCuadrado));
-  var sumaXPorY = _.sum(_.map(data, xPorY));
-  var sumaX = _.sum(_.map(data, x));
-  var sumaY = _.sum(_.map(data, y));
+var aproximarCuadratico = function() {
+  modeloCuadratico(puntos);
+}
+
+var modeloCuadratico = function(puntos) {
+  var xCuartas = _.map(puntos, xElevadoA(4));
+  var xCubos = _.map(puntos, xElevadoA(3));
+  var xCuadrados = _.map(puntos, xElevadoA(2));
+  var yPorXCuadrados = _.map(puntos, function(punto) { return y(punto) * xElevadoA(2)(punto) });
+  var xs = _.map(puntos, x);
+  var yPorX = _.map(puntos, function(punto) { return x(punto) * y(punto) });
+  var ys = _.map(puntos, y);
+
+  var sumaXCuarta = _.sum(xCuartas);
+  var sumaXCubo = _.sum(xCubos);
+  var sumaXCuadrado = _.sum(xCuadrados);
+  var sumaXPorYCuadrado = _.sum(yPorXCuadrados);
+  var sumaX = _.sum(xs);
+  var sumaYPorX = _.sum(yPorX);
+  var sumaY = _.sum(ys);
+  var coeficientes = [
+    [ sumaXCuarta, sumaXCubo, sumaXCuadrado, sumaXPorYCuadrado ],
+    [ sumaXCubo, sumaXCuadrado, sumaX, sumaYPorX ],
+    [ sumaXCuadrado, sumaX, n(), sumaY ]
+  ];
+  var a = determinante(d1(coeficientes)) / determinante(d(coeficientes));
+  var b = determinante(d2(coeficientes)) / determinante(d(coeficientes));
+  var c = determinante(d3(coeficientes)) / determinante(d(coeficientes));
+
+  graficarFuncion("(" + a + " * x^2) + (" + b + " * x) + " + c);
+}
+
+var aproximarLineal = function() {
+  var sumaXCuadrados = _.sum(_.map(puntos, xCuadrado));
+  var sumaXPorY = _.sum(_.map(puntos, xPorY));
+  var sumaX = _.sum(_.map(puntos, x));
+  var sumaY = _.sum(_.map(puntos, y));
 
   // REDONDEAR con .toPrecision()
 
-  var losX = _.map(data, x);
-  var losY = _.map(data, y);
-  var datos = [losX, losY, _.map(data, xCuadrado), _.map(data, xPorY)];
+  var losX = _.map(puntos, x);
+  var losY = _.map(puntos, y);
+  var datos = [losX, losY, _.map(puntos, xCuadrado), _.map(puntos, xPorY)];
 
 
   var b = (sumaXPorY - (sumaXCuadrados * sumaY / sumaX)) / (- (sumaXCuadrados * n() / sumaX) + sumaX);
@@ -64,7 +134,9 @@ var aproximar = function() {
     return Math.pow(aproximacion(x(punto)) - y(punto), 2);
   }
 
-  var diferenciasCuadradas = _.map(data, diferenciaCuadrada);
+  var aproximar = aproximarLineal;
+
+  var diferenciasCuadradas = _.map(puntos, diferenciaCuadrada);
   datos.push(yRaya, diferenciasCuadradas);
   for(var i = 0; i<datos[0].length; i++) {
     console.log(_.map(datos, function(columna) { return columna[i] }));
@@ -110,11 +182,9 @@ var nuevaFilaTabla = function(punto) {
 }
 
 var agregarPunto = function(punto) {
-  data.push(punto);
+  puntos.push(punto);
   ultimaFilaTabla.parentElement.insertBefore(nuevaFilaTabla(punto), ultimaFilaTabla);
   graficarPunto(punto);
-  // clearAll();
-  // plotter();
 }
 
 var agregarPuntoApretado = function(event) {
@@ -129,7 +199,6 @@ var agregarPuntoApretado = function(event) {
 function plotter() {
   var ecuacion = Math.E + " ^ x";
   f = board.jc.snippet(ecuacion, true, 'x', true);
-  // debugger;
   f = function(x) { return Math.pow(Math.E, x) };
   curve = board.create('functiongraph',[f,
                 function(){
@@ -141,15 +210,6 @@ function plotter() {
                   return c.usrCoords[1];
                 }
               ],{name:ecuacion, withLabel:true});
-  // var q = board.create('glider', [2, 1, curve], {withLabel:false});
-  // var t = board.create('text', [
-  //         function(){ return q.X()+0.1; },
-  //         function(){ return q.Y()+0.1; },
-  //         function(){ return ""; }
-  //     ],
-  //     {fontSize:15});
-
-  // data.forEach(function(punto){ graficarPunto(punto) });
 }
 
 function clearAll() {
