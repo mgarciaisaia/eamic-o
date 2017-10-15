@@ -19,6 +19,7 @@ window.addEventListener("load", function(event) {
 
   document.getElementById('botonAproximarLineal').addEventListener('click', aproximarLineal);
   document.getElementById('botonAproximarCuadrado').addEventListener('click', aproximarCuadratico);
+  document.getElementById('botonAproximarExponencial').addEventListener('click', aproximarExponencial);
 
   // [[1,1], [3,2], [4,4],[6,4], [8, 5],[9,7],[11,8],[14,9]].forEach(agregarPunto);
 });
@@ -30,7 +31,9 @@ var xElevadoA = function(exponente) { return function(punto) { return Math.pow(x
 var xCuadrado = xElevadoA(2);
 var xCubo = xElevadoA(3);
 var xCuarta = xElevadoA(4);
-var xPorY = function(punto) { return x(punto) * y(punto); }
+var xPorY = function(punto) { return x(punto) * y(punto); };
+var lnY = function(punto) {return Math.log(y(punto))};
+var xPorLnY = function(punto) { return x(punto) * lnY(punto); };
 
 // Determinante de una matriz 3x3
 var determinante = function(a) {
@@ -152,6 +155,7 @@ var graficarPunto = function(punto) {
 }
 
 var graficarFuncion = function(ecuacion) {
+  console.log(ecuacion);
   if(curve) {
     curve.remove();
     curve = null;
@@ -241,3 +245,39 @@ function addDerivative() {
                 }], {dash:2});
     }
 }
+
+
+var aproximarExponencial = function() {
+  var sumaXCuadrados = _.sum(_.map(puntos, xCuadrado));
+  var sumaXPorLnY = _.sum(_.map(puntos, xPorLnY));
+  var sumaX = _.sum(_.map(puntos, x));
+  var sumaY = _.sum(_.map(puntos, y));
+  var sumaLnY = _.sum(_.map(puntos, lnY));
+
+  // REDONDEAR con .toPrecision()
+
+  var losX = _.map(puntos, x);
+  var losY = _.map(puntos, y);
+  var datos = [losX, losY, _.map(puntos, lnY), _.map(puntos, xCuadrado), _.map(puntos, xPorLnY)];
+
+
+  var b = (sumaXPorLnY - (sumaXCuadrados * sumaY / sumaX)) / (- (sumaXCuadrados * n() / sumaX) + sumaX);
+  var a = (sumaLnY - (n() * b)) / sumaX;
+
+  var aproximacion = function(x) { return b * Math.exp(a * x) };
+
+  var yRaya = _.map(losX, aproximacion);
+  var diferenciaCuadrada = function(punto) {
+    return Math.pow(aproximacion(x(punto)) - y(punto), 2);
+  }
+
+  var diferenciasCuadradas = _.map(puntos, diferenciaCuadrada);
+  datos.push(yRaya, diferenciasCuadradas);
+  for(var i = 0; i<datos[0].length; i++) {
+    console.log(_.map(datos, function(columna) { return columna[i] }));
+  }
+
+  var errorCuadratico = _.sum(diferenciasCuadradas);
+  console.log(errorCuadratico);
+  graficarFuncion(b  + " * e ^ (" + a + " * x)");
+};
