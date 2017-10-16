@@ -34,6 +34,7 @@ var xCuarta = xElevadoA(4);
 var xPorY = function(punto) { return x(punto) * y(punto); };
 var lnY = function(punto) {return Math.log(y(punto))};
 var xPorLnY = function(punto) { return x(punto) * lnY(punto); };
+var exponencial = Math.exp(1);
 
 // Determinante de una matriz 3x3
 var determinante = function(a) {
@@ -261,9 +262,15 @@ var aproximarExponencial = function() {
   var datos = [losX, losY, _.map(puntos, lnY), _.map(puntos, xCuadrado), _.map(puntos, xPorLnY)];
 
 
-  var b = (sumaXPorLnY - (sumaXCuadrados * sumaY / sumaX)) / (- (sumaXCuadrados * n() / sumaX) + sumaX);
-  var a = (sumaLnY - (n() * b)) / sumaX;
+  var bMayuscula = (sumaXPorLnY - (sumaXCuadrados * sumaLnY / sumaX)) / (-(sumaXCuadrados * n()) / sumaX + sumaX) ;
+  var aMayuscula = (sumaLnY - (n() * bMayuscula)) / sumaX;
 
+  var a = aMayuscula;
+  var b = Math.exp(bMayuscula);
+
+
+  console.log(a);
+  console.log(b);
   var aproximacion = function(x) { return b * Math.exp(a * x) };
 
   var yRaya = _.map(losX, aproximacion);
@@ -279,5 +286,5 @@ var aproximarExponencial = function() {
 
   var errorCuadratico = _.sum(diferenciasCuadradas);
   console.log(errorCuadratico);
-  graficarFuncion(b  + " * e ^ (" + a + " * x)");
+  graficarFuncion(b  + " * " + exponencial + "^(" + a + " * x)");
 };
