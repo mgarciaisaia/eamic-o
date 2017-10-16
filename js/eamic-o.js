@@ -21,6 +21,8 @@ window.addEventListener("load", function(event) {
   document.getElementById('botonAproximarCuadrado').addEventListener('click', aproximarCuadratico);
   document.getElementById('botonAproximarExponencial').addEventListener('click', aproximarExponencial);
   document.getElementById('botonAproximarPotencial').addEventListener('click', aproximarPotencial);
+  document.getElementById('botonAproximarHiperbola').addEventListener('click', aproximarHiperbola);
+  
   // [[1,1], [3,2], [4,4],[6,4], [8, 5],[9,7],[11,8],[14,9]].forEach(agregarPunto);
 });
 
@@ -40,6 +42,7 @@ var lnXPorLnY = function(punto) { return lnX(punto) * lnY(punto); }
 var xPorLnY = function(punto) { return x(punto) * lnY(punto); }
 var unoDivididoY = function(punto) { return 1/y(punto); }
 var lnXCuadrado = function(punto) { return Math.pow(lnX(punto), 2); }
+var XPorUnoDivididoY = function(punto) { return unoDivididoY(punto) * x(punto)}
 
 
 // Determinante de una matriz 3x3
@@ -310,7 +313,7 @@ var aproximarPotencial = function() {
 
   var losX = _.map(puntos, x);
   var losY = _.map(puntos, y);
-  var datos = [losX, losY,  _.map(puntos, lnX), _.map(puntos, lnY), _.map(puntos, xCuadrado), _.map(puntos, xPorY)];
+  var datos = [losX, losY,  _.map(puntos, lnX), _.map(puntos, lnY), _.map(puntos, lnXCuadrado), _.map(puntos, lnXPorLnY)];
 
 
   var bMayuscula = (sumaLnXPorLnY - (sumaLnXCuadrados * sumaLnY / sumaLnX)) / (-(sumaLnXCuadrados * n()) / sumaLnX + sumaLnX) ;
@@ -319,9 +322,6 @@ var aproximarPotencial = function() {
   var a = aMayuscula;
   var b = Math.exp(bMayuscula);
 
-  console.log(a);
-  console.log(b);
-  
   var aproximacion = function(x) { return b * Math.pow(x, a)};
 
   var yRaya = _.map(losX, aproximacion);
@@ -338,4 +338,44 @@ var aproximarPotencial = function() {
   var errorCuadratico = _.sum(diferenciasCuadradas);
   console.log(errorCuadratico);
   graficarFuncion(b  + " * x^" + a );
+};
+
+
+// Modelo Hipérbola
+
+var aproximarHiperbola = function() {
+  var sumaXCuadrados = _.sum(_.map(puntos, xCuadrado));
+  var sumaXPorUnoDivididoY = _.sum(_.map(puntos, XPorUnoDivididoY));
+  var sumaX = _.sum(_.map(puntos, x));
+  var sumaUnoDivididoY = _.sum(_.map(puntos, unoDivididoY));
+
+  // REDONDEAR con .toPrecision()
+
+  var losX = _.map(puntos, x);
+  var losY = _.map(puntos, y);
+  var datos = [losX, losY,  _.map(puntos, unoDivididoY), _.map(puntos, xCuadrado), _.map(puntos, XPorUnoDivididoY)];
+
+
+  var bMayuscula = (sumaXPorUnoDivididoY - (sumaXCuadrados * sumaUnoDivididoY / sumaX)) / (-(sumaXCuadrados * n()) / sumaX + sumaX) ;
+  var aMayuscula = (sumaUnoDivididoY - (n() * bMayuscula)) / sumaX;
+
+  var a = 1/aMayuscula;
+  var b = bMayuscula * a;
+
+  var aproximacion = function(x) { return a/ (b + x)};
+
+  var yRaya = _.map(losX, aproximacion);
+  var diferenciaCuadrada = function(punto) {
+    return Math.pow(aproximacion(x(punto)) - y(punto), 2);
+  }
+
+  var diferenciasCuadradas = _.map(puntos, diferenciaCuadrada);
+  datos.push(yRaya, diferenciasCuadradas);
+  for(var i = 0; i<datos[0].length; i++) {
+    console.log(_.map(datos, function(columna) { return columna[i] }));
+  }
+
+  var errorCuadratico = _.sum(diferenciasCuadradas);
+  console.log(errorCuadratico);
+  graficarFuncion(a + "/" + "(" + b +" + x)");
 };
