@@ -20,9 +20,11 @@ window.addEventListener("load", function(event) {
   document.getElementById('botonAproximarLineal').addEventListener('click', aproximarLineal);
   document.getElementById('botonAproximarCuadrado').addEventListener('click', aproximarCuadratico);
   document.getElementById('botonAproximarExponencial').addEventListener('click', aproximarExponencial);
-
+  document.getElementById('botonAproximarPotencial').addEventListener('click', aproximarPotencial);
   // [[1,1], [3,2], [4,4],[6,4], [8, 5],[9,7],[11,8],[14,9]].forEach(agregarPunto);
 });
+
+// funciones necesitadas por los modelos
 
 var n = function() { return puntos.length; }
 var x = function(punto) { return punto[0]; }
@@ -31,10 +33,14 @@ var xElevadoA = function(exponente) { return function(punto) { return Math.pow(x
 var xCuadrado = xElevadoA(2);
 var xCubo = xElevadoA(3);
 var xCuarta = xElevadoA(4);
-var xPorY = function(punto) { return x(punto) * y(punto); };
-var lnY = function(punto) {return Math.log(y(punto))};
-var xPorLnY = function(punto) { return x(punto) * lnY(punto); };
-var exponencial = Math.exp(1);
+var xPorY = function(punto) { return x(punto) * y(punto); }
+var lnY = function(punto) { return Math.log(y(punto)); }
+var lnX = function(punto) { return Math.log(x(punto)); }
+var lnXPorLnY = function(punto) { return lnX(punto) * lnY(punto); }
+var xPorLnY = function(punto) { return x(punto) * lnY(punto); }
+var unoDivididoY = function(punto) { return 1/y(punto); }
+var lnXCuadrado = function(punto) { return Math.pow(lnX(punto), 2); }
+
 
 // Determinante de una matriz 3x3
 var determinante = function(a) {
@@ -84,6 +90,8 @@ var d3 = function(a) {
   ]
 }
 
+// Modelo cuadrático
+
 var aproximarCuadratico = function() {
   modeloCuadratico(puntos);
 }
@@ -115,6 +123,9 @@ var modeloCuadratico = function(puntos) {
 
   graficarFuncion("(" + a + " * x^2) + (" + b + " * x) + " + c);
 }
+
+
+// Modelo lineal 
 
 var aproximarLineal = function() {
   var sumaXCuadrados = _.sum(_.map(puntos, xCuadrado));
@@ -247,6 +258,7 @@ function addDerivative() {
     }
 }
 
+// Modelo exponencial
 
 var aproximarExponencial = function() {
   var sumaXCuadrados = _.sum(_.map(puntos, xCuadrado));
@@ -268,9 +280,6 @@ var aproximarExponencial = function() {
   var a = aMayuscula;
   var b = Math.exp(bMayuscula);
 
-
-  console.log(a);
-  console.log(b);
   var aproximacion = function(x) { return b * Math.exp(a * x) };
 
   var yRaya = _.map(losX, aproximacion);
@@ -286,5 +295,47 @@ var aproximarExponencial = function() {
 
   var errorCuadratico = _.sum(diferenciasCuadradas);
   console.log(errorCuadratico);
-  graficarFuncion(b  + " * " + exponencial + "^(" + a + " * x)");
+  graficarFuncion(b  + " * " + Math.E + "^(" + a + " * x)");
+};
+
+// Modelo Potencial 
+
+var aproximarPotencial = function() {
+  var sumaLnXCuadrados = _.sum(_.map(puntos, lnXCuadrado));
+  var sumaLnY = _.sum(_.map(puntos, lnY));
+  var sumaLnX = _.sum(_.map(puntos, lnX));
+  var sumaLnXPorLnY = _.sum(_.map(puntos, lnXPorLnY));
+
+  // REDONDEAR con .toPrecision()
+
+  var losX = _.map(puntos, x);
+  var losY = _.map(puntos, y);
+  var datos = [losX, losY,  _.map(puntos, lnX), _.map(puntos, lnY), _.map(puntos, xCuadrado), _.map(puntos, xPorY)];
+
+
+  var bMayuscula = (sumaLnXPorLnY - (sumaLnXCuadrados * sumaLnY / sumaLnX)) / (-(sumaLnXCuadrados * n()) / sumaLnX + sumaLnX) ;
+  var aMayuscula = (sumaLnY - (n() * bMayuscula)) / sumaLnX;
+
+  var a = aMayuscula;
+  var b = Math.exp(bMayuscula);
+
+  console.log(a);
+  console.log(b);
+  
+  var aproximacion = function(x) { return b * Math.pow(x, a)};
+
+  var yRaya = _.map(losX, aproximacion);
+  var diferenciaCuadrada = function(punto) {
+    return Math.pow(aproximacion(x(punto)) - y(punto), 2);
+  }
+
+  var diferenciasCuadradas = _.map(puntos, diferenciaCuadrada);
+  datos.push(yRaya, diferenciasCuadradas);
+  for(var i = 0; i<datos[0].length; i++) {
+    console.log(_.map(datos, function(columna) { return columna[i] }));
+  }
+
+  var errorCuadratico = _.sum(diferenciasCuadradas);
+  console.log(errorCuadratico);
+  graficarFuncion(b  + " * x^" + a );
 };
