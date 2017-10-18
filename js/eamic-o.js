@@ -127,6 +127,15 @@ var modeloCuadratico = function(puntos) {
   graficarFuncion("(" + a + " * x^2) + (" + b + " * x) + " + c);
 }
 
+var ecuacionLineal = function(componentes) {
+  return ["\\begin{equation} \\begin{cases} &", componentes[0][0], componentes[0][1], " + ", componentes[0][2], componentes[0][3], " = ", componentes[0][4]," \\\\ ",
+  "&", componentes[1][0], componentes[1][1], " + ", componentes[1][2], componentes[1][3], " = ", componentes[1][4], " \\end{cases} \\end{equation}"].join("")
+}
+
+var graficarSistemaDeEcuaciones = function(markupDeEcuaciones) {
+  document.getElementById('sistemaEcuaciones').textContent = markupDeEcuaciones;
+  MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+}
 
 // Modelo lineal 
 
@@ -163,6 +172,9 @@ var aproximarLineal = function() {
   var errorCuadratico = _.sum(diferenciasCuadradas);
   console.log(errorCuadratico);
   graficarFuncion("(" + a + " * x) + " + b);
+  graficarSistemaDeEcuaciones(
+    ecuacionLineal([[sumaXCuadrados, 'a', sumaX, 'b', sumaXPorY], [sumaX, 'a', n(), 'b', sumaY]])
+  )
 };
 
 var graficarPunto = function(punto) {
