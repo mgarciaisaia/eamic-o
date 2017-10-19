@@ -4,6 +4,7 @@ var board;
 var f, curve; // global objects
 var tablaDeDatos, ultimaFilaTabla;
 var nuevoX, nuevoY;
+var inputPrecision;
 
 window.addEventListener("load", function(event) {
   board = JXG.JSXGraph.initBoard('jxgbox', {boundingbox:[-5,8,8,-5], axis:true});
@@ -17,32 +18,41 @@ window.addEventListener("load", function(event) {
   nuevoX = document.getElementById('nuevoX');
   nuevoY = document.getElementById('nuevoY');
 
+  inputPrecision = document.getElementById('precision');
+
   document.getElementById('botonAproximarLineal').addEventListener('click', aproximarLineal);
   document.getElementById('botonAproximarCuadrado').addEventListener('click', aproximarCuadratico);
   document.getElementById('botonAproximarExponencial').addEventListener('click', aproximarExponencial);
   document.getElementById('botonAproximarPotencial').addEventListener('click', aproximarPotencial);
   document.getElementById('botonAproximarHiperbola').addEventListener('click', aproximarHiperbola);
-  
+
   // [[1,1], [3,2], [4,4],[6,4], [8, 5],[9,7],[11,8],[14,9]].forEach(agregarPunto);
 });
 
 // funciones necesitadas por los modelos
+var precision = function() { return inputPrecision.value || 0 }
+
+var redondear = function(numero) {
+  var re = new RegExp("(\\d+\\.\\d{" + precision() + "})(\\d)"),
+    m = numero.toString().match(re);
+  return m ? parseFloat(m[1]) : numero.valueOf();
+};
 
 var n = function() { return puntos.length; }
-var x = function(punto) { return punto[0]; }
-var y = function(punto) { return punto[1]; }
-var xElevadoA = function(exponente) { return function(punto) { return Math.pow(x(punto), exponente) } };
+var x = function(punto) { return redondear(punto[0]); }
+var y = function(punto) { return redondear(punto[1]); }
+var xElevadoA = function(exponente) { return function(punto) { return redondear(Math.pow(x(punto), exponente)) } };
 var xCuadrado = xElevadoA(2);
 var xCubo = xElevadoA(3);
 var xCuarta = xElevadoA(4);
-var xPorY = function(punto) { return x(punto) * y(punto); }
-var lnY = function(punto) { return Math.log(y(punto)); }
-var lnX = function(punto) { return Math.log(x(punto)); }
-var lnXPorLnY = function(punto) { return lnX(punto) * lnY(punto); }
-var xPorLnY = function(punto) { return x(punto) * lnY(punto); }
-var unoDivididoY = function(punto) { return 1/y(punto); }
-var lnXCuadrado = function(punto) { return Math.pow(lnX(punto), 2); }
-var XPorUnoDivididoY = function(punto) { return unoDivididoY(punto) * x(punto)}
+var xPorY = function(punto) { return redondear(x(punto) * y(punto)); }
+var lnY = function(punto) { return redondear(Math.log(y(punto))); }
+var lnX = function(punto) { return redondear(Math.log(x(punto))); }
+var lnXPorLnY = function(punto) { return redondear(lnX(punto) * lnY(punto)); }
+var xPorLnY = function(punto) { return redondear(x(punto) * lnY(punto)); }
+var unoDivididoY = function(punto) { return redondear(1/y(punto)); }
+var lnXCuadrado = function(punto) { return redondear(Math.pow(lnX(punto), 2)); }
+var XPorUnoDivididoY = function(punto) { return redondear(unoDivididoY(punto) * x(punto)); }
 
 
 // Determinante de una matriz 3x3
