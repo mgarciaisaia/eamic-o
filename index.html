@@ -4,6 +4,12 @@
     <link href="css/jsxgraph-0.99.6.css" rel="stylesheet" />
     <script type="text/javascript" src="js/lodash-4.17.4.min.js"></script>
     <script type="text/javascript" src="js/jsxgraphcore-0.99.6.js"></script>
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        showMathMenu: false,
+        showMathMenuMSIE: false,
+      });
+    </script>
     <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
     <script type="text/javascript" src="js/eamic-o.js"></script>
     <style>
@@ -20,14 +26,21 @@
       <h2>Puntos de entrada</h2>
       <table id="tablaDeDatos">
         <thead>
-          <th>x</th>
-          <th>y</th>
-          <th>x<sup>2</sup></th>
-          <th>xy</th>
-          <th>ln(y)</th>
-          <th>x ln(y)</th>
-          <th>ȳ</th>
-          <th>(ȳ-y)<sup>2</sup></th>
+          <th>`x`</th>
+          <th>`y`</th>
+          <th>`x^2`</th>
+          <th>`x^3`</th>
+          <th>`x^4`</th>
+          <th>`xy`</th>
+          <th>`ln(x)`</th>
+          <th>`ln(x)^2`</th>
+          <th>`ln(y)`</th>
+          <th>`ln(x)ln(y)`</th>
+          <th>`xln(y)`</th>
+          <th>`1/y`</th>
+          <th>`x 1/y`</th>
+          <th>`bar y`</th>
+          <th>`(bar y-y)^2`</th>
         </thead>
         <tr id="filaNuevoPunto">
           <td><input type="number" name="x" id="nuevoX" /></td>
