@@ -10,7 +10,7 @@ class AgregadorPunto extends Component {
   }
 
   manejarAgregarPunto() {
-    this.props.agregarPunto(Number.parseInt(this.state.x, 10), Number.parseInt(this.state.y, 10));
+    this.props.agregarPunto(Number.parseFloat(this.state.x), Number.parseFloat(this.state.y));
     this.setState({x: '', y: ''})
   }
 
