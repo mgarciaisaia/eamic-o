@@ -65,36 +65,74 @@
           </div>
         </div>
       </div>
-      <p id="sistemaEcuaciones"></p>
-      <div class="puntosDeEntrada">
-        <h2>Puntos de entrada</h2>
-        <table id="tablaDeDatos">
-          <thead>
-            <th>`x`</th>
-            <th>`y`</th>
-            <th>`x^2`</th>
-            <th>`x^3`</th>
-            <th>`x^4`</th>
-            <th>`xy`</th>
-            <th>`ln(x)`</th>
-            <th>`ln(x)^2`</th>
-            <th>`ln(y)`</th>
-            <th>`ln(x)ln(y)`</th>
-            <th>`xln(y)`</th>
-            <th>`1/y`</th>
-            <th>`x 1/y`</th>
-            <th>`bar y`</th>
-            <th>`(bar y-y)^2`</th>
-          </thead>
-          <tr id="filaNuevoPunto">
-            <td><input type="number" name="x" id="nuevoX" /></td>
-            <td><input type="number" name="y" id="nuevoY" /></td>
-            <td></td>
-          </tr>
-        </table>
-        <input type="button" id="agregarPunto" value="Agregar" />
+      <div>
+        <form class="form-inline">
+          <div class="form-row align-items-center">
+            <div class="col-auto">
+              <label class="sr-only" for="inlinePuntoEntrada">Punto</label>
+              <input type="text" name="" readonly class="form-control-plaintext" id="inlinePuntoEntrada" value="Puntos de entrada">
+            </div>
+            <div class="col-auto">
+              <label class="sr-only" for="inlinePuntoX">Punto X</label>
+              <div class="input-group mb-2 mb-sm-0">
+                <div class="input-group-addon">X</div>
+                <input type="number" name="x" class="form-control" id="inlinePuntoX">
+              </div>
+            </div>
+            <div class="col-auto">
+              <label class="sr-only" for="inlinePuntoY">Punto Y</label>
+              <div class="input-group mb-2 mb-sm-0">
+                <div class="input-group-addon">Y</div>
+                <input type="number" name="y" class="form-control" id="inlinePuntoY">
+              </div>
+            </div>
+            <div class="col-auto">
+              <button type="button" class="btn btn-primary" id="agregarPunto">Agregar</button>
+            </div>
+          </div>
+        </form>
       </div>
-      <div id="jxgbox" class="jxgbox" style="width:500px; height:500px;"></div>
+      <p id="sistemaEcuaciones"></p>
+      <div class="container">
+        <div class="row">
+          <div class="col">
+            <h3>Procesador de datos</h3>
+            <div class="table-responsive">
+              <table class="table table-striped table-bordered" id="tablaDeDatos">
+                <thead class="thead-light">
+                  <th>`x`</th>
+                  <th>`y`</th>
+                  <th>`x^2`</th>
+                  <th>`x^3`</th>
+                  <th>`x^4`</th>
+                  <th>`xy`</th>
+                  <th>`ln(x)`</th>
+                  <th>`ln(x)^2`</th>
+                  <th>`ln(y)`</th>
+                  <th>`ln(x)ln(y)`</th>
+                  <th>`xln(y)`</th>
+                  <th>`1/y`</th>
+                  <th>`x 1/y`</th>
+                  <th>`bar y`</th>
+                  <th>`(bar y-y)^2`</th>
+                </thead>
+                <tbody>
+                  <tr id="filaNuevoPunto">
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <h3>Gr&aacute;fica</h3>
+            <div class="embed-responsive">
+              <div id="jxgbox" class="jxgbox" style="height:500px;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
     </main>
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>

@@ -3,7 +3,7 @@ var puntos = [];
 var board;
 var f, curve; // global objects
 var tablaDeDatos, ultimaFilaTabla;
-var nuevoX, nuevoY;
+var inlinePuntoX, inlinePuntoY;
 var inputPrecision;
 
 window.addEventListener("load", function(event) {
@@ -15,8 +15,8 @@ window.addEventListener("load", function(event) {
   tablaDeDatos = document.getElementById('tablaDeDatos');
   ultimaFilaTabla = document.getElementById('filaNuevoPunto');
 
-  nuevoX = document.getElementById('nuevoX');
-  nuevoY = document.getElementById('nuevoY');
+  inlinePuntoX = document.getElementById('inlinePuntoX');
+  inlinePuntoY = document.getElementById('inlinePuntoY');
 
   inputPrecision = document.getElementById('precision');
 
@@ -219,6 +219,19 @@ var nuevaFilaTabla = function(punto) {
   var fila = document.createElement('tr');
   fila.appendChild(nuevaCelda(x(punto)));
   fila.appendChild(nuevaCelda(y(punto)));
+  fila.appendChild(nuevaCelda(xCuadrado(punto)));
+  fila.appendChild(nuevaCelda(xCubo(punto)));
+  fila.appendChild(nuevaCelda(xCuarta(punto)));
+  fila.appendChild(nuevaCelda(xPorY(punto)));
+  fila.appendChild(nuevaCelda(lnX(punto)));
+  fila.appendChild(nuevaCelda(lnXCuadrado(punto)));
+  fila.appendChild(nuevaCelda(lnY(punto)));
+  fila.appendChild(nuevaCelda(lnXPorLnY(punto)));
+  fila.appendChild(nuevaCelda(xPorLnY(punto)));
+  fila.appendChild(nuevaCelda(unoDivididoY(punto)));
+  fila.appendChild(nuevaCelda(XPorUnoDivididoY(punto)));
+  fila.appendChild(nuevaCelda());
+  fila.appendChild(nuevaCelda());
   return fila;
 }
 
@@ -229,12 +242,10 @@ var agregarPunto = function(punto) {
 }
 
 var agregarPuntoApretado = function(event) {
-  var punto = [parseFloat(nuevoX.value), parseFloat(nuevoY.value)]
+  var punto = [parseFloat(inlinePuntoX.value), parseFloat(inlinePuntoY.value)]
   agregarPunto(punto);
-  nuevoX.value = '';
-  nuevoY.value = '';
-  nuevoX.focus();
-  nuevoX.scrollIntoView();
+  inlinePuntoX.value = '';
+  inlinePuntoY.value = '';
 }
 
 function plotter() {
