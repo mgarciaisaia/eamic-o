@@ -12,16 +12,19 @@ class App extends Component {
     this.state = {
       puntos: [],
       precision: 5,
-      lineal: true,
-      cuadratico: true,
-      exponencial: true,
-      potencial: true,
-      hiperbolico: true
+      modelos: {
+        lineal: true,
+        cuadratico: true,
+        exponencial: true,
+        potencial: true,
+        hiperbolico: true
+      }
     }
 
     this.actualizarPrecision = this.actualizarPrecision.bind(this);
     this.agregarPunto = this.agregarPunto.bind(this);
     this.borrarPunto = this.borrarPunto.bind(this);
+    this.cambiarVisibilidadModelo = this.cambiarVisibilidadModelo.bind(this);
   }
 
   actualizarPrecision(nuevaPrecision) {
@@ -40,6 +43,10 @@ class App extends Component {
     })
   }
 
+  cambiarVisibilidadModelo(modelo, valor) {
+    this.setState(estado => ({modelos: {...estado.modelos, [modelo]: valor}}))
+  }
+
   render() {
     return (
       <div>
@@ -47,9 +54,9 @@ class App extends Component {
         <pre>{JSON.stringify(this.state)}</pre>
         <Precision precision={this.state.precision} actualizarPrecision={this.actualizarPrecision} />
         <PuntosDeDatos puntos={this.state.puntos} borrarPunto={this.borrarPunto} agregarPunto={this.agregarPunto} />
-        <ComparativaModelos />
+        <ComparativaModelos modelos={this.state.modelos} cambiarVisibilidadModelo={this.cambiarVisibilidadModelo} />
         <Grafico />
-        <TablasDeCalculos />
+        <TablasDeCalculos modelos={this.state.modelos} puntos={this.state.puntos} />
       </div>
     );
   }

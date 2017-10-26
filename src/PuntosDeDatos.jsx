@@ -57,7 +57,7 @@ class PuntosDeDatos extends Component {
                 <TableColumn><Button icon onClick={this.props.borrarPunto.bind(this, i)}>delete</Button></TableColumn>
               </TableRow>
             ))}
-            <TableRow>
+            <TableRow className="sumatoria">
               <TableColumn>{_.sum(this.props.puntos.map((punto) => x(punto)))}</TableColumn>
               <TableColumn>{_.sum(this.props.puntos.map((punto) => y(punto)))}</TableColumn>
               <TableColumn></TableColumn>
