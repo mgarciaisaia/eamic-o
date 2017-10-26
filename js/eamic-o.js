@@ -1,3 +1,7 @@
+////////////////////////////////////
+// variables y funciones globales //
+////////////////////////////////////
+
 var puntos = [];
 
 var board;
@@ -5,29 +9,6 @@ var f, curve; // global objects
 var tablaDeDatos, ultimaFilaTabla;
 var inlinePuntoX, inlinePuntoY;
 var inputPrecision;
-
-window.addEventListener("load", function(event) {
-  board = JXG.JSXGraph.initBoard('jxgbox', {boundingbox:[-5,8,8,-5], axis:true});
-
-  var botonAgregarPunto = document.getElementById('agregarPunto');
-  botonAgregarPunto.addEventListener('click', agregarPuntoApretado);
-
-  tablaDeDatos = document.getElementById('tablaDeDatos');
-  ultimaFilaTabla = document.getElementById('filaNuevoPunto');
-
-  inlinePuntoX = document.getElementById('inlinePuntoX');
-  inlinePuntoY = document.getElementById('inlinePuntoY');
-
-  inputPrecision = document.getElementById('precision');
-
-  document.getElementById('botonAproximarLineal').addEventListener('click', aproximarLineal);
-  document.getElementById('botonAproximarCuadrado').addEventListener('click', aproximarCuadratico);
-  document.getElementById('botonAproximarExponencial').addEventListener('click', aproximarExponencial);
-  document.getElementById('botonAproximarPotencial').addEventListener('click', aproximarPotencial);
-  document.getElementById('botonAproximarHiperbola').addEventListener('click', aproximarHiperbola);
-
-  // [[1,1], [3,2], [4,4],[6,4], [8, 5],[9,7],[11,8],[14,9]].forEach(agregarPunto);
-});
 
 // funciones necesitadas por los modelos
 var precision = function() { return inputPrecision.value || 0 }
@@ -103,94 +84,6 @@ var d3 = function(a) {
   ]
 }
 
-// Modelo cuadrático
-
-var aproximarCuadratico = function() {
-  modeloCuadratico(puntos);
-}
-
-var modeloCuadratico = function(puntos) {
-  var xCuartas = _.map(puntos, xElevadoA(4));
-  var xCubos = _.map(puntos, xElevadoA(3));
-  var xCuadrados = _.map(puntos, xElevadoA(2));
-  var yPorXCuadrados = _.map(puntos, function(punto) { return y(punto) * xElevadoA(2)(punto) });
-  var xs = _.map(puntos, x);
-  var yPorX = _.map(puntos, function(punto) { return x(punto) * y(punto) });
-  var ys = _.map(puntos, y);
-
-  var sumaXCuarta = _.sum(xCuartas);
-  var sumaXCubo = _.sum(xCubos);
-  var sumaXCuadrado = _.sum(xCuadrados);
-  var sumaXPorYCuadrado = _.sum(yPorXCuadrados);
-  var sumaX = _.sum(xs);
-  var sumaYPorX = _.sum(yPorX);
-  var sumaY = _.sum(ys);
-  var coeficientes = [
-    [ sumaXCuarta, sumaXCubo, sumaXCuadrado, sumaXPorYCuadrado ],
-    [ sumaXCubo, sumaXCuadrado, sumaX, sumaYPorX ],
-    [ sumaXCuadrado, sumaX, n(), sumaY ]
-  ];
-  var a = determinante(d1(coeficientes)) / determinante(d(coeficientes));
-  var b = determinante(d2(coeficientes)) / determinante(d(coeficientes));
-  var c = determinante(d3(coeficientes)) / determinante(d(coeficientes));
-
-  graficarFuncion("(" + a + " * x^2) + (" + b + " * x) + " + c);
-}
-
-var ecuacionLineal = function(componentes) {
-  return ["\\begin{equation} \\begin{cases} &", componentes[0][0], componentes[0][1], " + ", componentes[0][2], componentes[0][3], " = ", componentes[0][4]," \\\\ ",
-  "&", componentes[1][0], componentes[1][1], " + ", componentes[1][2], componentes[1][3], " = ", componentes[1][4], " \\end{cases} \\end{equation}"].join("")
-}
-
-var graficarSistemaDeEcuaciones = function(markupDeEcuaciones) {
-  document.getElementById('sistemaEcuaciones').textContent = markupDeEcuaciones;
-  MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
-}
-
-// Modelo lineal 
-
-var aproximarLineal = function() {
-  var sumaXCuadrados = _.sum(_.map(puntos, xCuadrado));
-  var sumaXPorY = _.sum(_.map(puntos, xPorY));
-  var sumaX = _.sum(_.map(puntos, x));
-  var sumaY = _.sum(_.map(puntos, y));
-
-  // REDONDEAR con .toPrecision()
-
-  var losX = _.map(puntos, x);
-  var losY = _.map(puntos, y);
-  var datos = [losX, losY, _.map(puntos, xCuadrado), _.map(puntos, xPorY)];
-
-
-  var b = (sumaXPorY - (sumaXCuadrados * sumaY / sumaX)) / (- (sumaXCuadrados * n() / sumaX) + sumaX);
-  var a = (sumaY - (n() * b)) / sumaX;
-  var aproximacion = function(x) { return (a * x) + b };
-
-  var yRaya = _.map(losX, aproximacion);
-  var diferenciaCuadrada = function(punto) {
-    return Math.pow(aproximacion(x(punto)) - y(punto), 2);
-  }
-
-  var aproximar = aproximarLineal;
-
-  var diferenciasCuadradas = _.map(puntos, diferenciaCuadrada);
-  datos.push(yRaya, diferenciasCuadradas);
-  for(var i = 0; i<datos[0].length; i++) {
-    console.log(_.map(datos, function(columna) { return columna[i] }));
-  }
-
-  var errorCuadratico = _.sum(diferenciasCuadradas);
-  console.log(errorCuadratico);
-  graficarFuncion("(" + a + " * x) + " + b);
-  graficarSistemaDeEcuaciones(
-    ecuacionLineal([[sumaXCuadrados, 'a', sumaX, 'b', sumaXPorY], [sumaX, 'a', n(), 'b', sumaY]])
-  )
-};
-
-var graficarPunto = function(punto) {
-  board.create('point', [x(punto),y(punto)], {fixed: true});
-}
-
 var graficarFuncion = function(ecuacion) {
   console.log(ecuacion);
   if(curve) {
@@ -235,6 +128,10 @@ var nuevaFilaTabla = function(punto) {
   return fila;
 }
 
+var graficarPunto = function(punto) {
+  board.create('point', [x(punto),y(punto)], {fixed: true});
+}
+
 var agregarPunto = function(punto) {
   puntos.push(punto);
   ultimaFilaTabla.parentElement.insertBefore(nuevaFilaTabla(punto), ultimaFilaTabla);
@@ -242,10 +139,12 @@ var agregarPunto = function(punto) {
 }
 
 var agregarPuntoApretado = function(event) {
-  var punto = [parseFloat(inlinePuntoX.value), parseFloat(inlinePuntoY.value)]
-  agregarPunto(punto);
-  inlinePuntoX.value = '';
-  inlinePuntoY.value = '';
+  if(inlinePuntoX.value != '' && inlinePuntoY.value != '') {
+    var punto = [parseFloat(inlinePuntoX.value), parseFloat(inlinePuntoY.value)]
+    agregarPunto(punto);
+    inlinePuntoX.value = '';
+    inlinePuntoY.value = '';
+    }
 }
 
 function plotter() {
@@ -294,7 +193,96 @@ function addDerivative() {
     }
 }
 
-// Modelo exponencial
+var ecuacionLineal = function(componentes) {
+  return ["\\begin{equation} \\begin{cases} &", componentes[0][0], componentes[0][1], " + ", componentes[0][2], componentes[0][3], " = ", componentes[0][4]," \\\\ ",
+  "&", componentes[1][0], componentes[1][1], " + ", componentes[1][2], componentes[1][3], " = ", componentes[1][4], " \\end{cases} \\end{equation}"].join("")
+}
+
+var graficarSistemaDeEcuaciones = function(markupDeEcuaciones) {
+  document.getElementById('sistemaEcuaciones').textContent = markupDeEcuaciones;
+  MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+}
+
+
+///////////////////
+// Modelo lineal //
+///////////////////
+
+var aproximarLineal = function() {
+  var sumaXCuadrados = _.sum(_.map(puntos, xCuadrado));
+  var sumaXPorY = _.sum(_.map(puntos, xPorY));
+  var sumaX = _.sum(_.map(puntos, x));
+  var sumaY = _.sum(_.map(puntos, y));
+
+  var losX = _.map(puntos, x);
+  var losY = _.map(puntos, y);
+  var datos = [losX, losY, _.map(puntos, xCuadrado), _.map(puntos, xPorY)];
+
+
+  var b = (sumaXPorY - (sumaXCuadrados * sumaY / sumaX)) / (- (sumaXCuadrados * n() / sumaX) + sumaX);
+  var a = (sumaY - (n() * b)) / sumaX;
+  var aproximacion = function(x) { return (a * x) + b };
+
+  var yRaya = _.map(losX, aproximacion);
+  var diferenciaCuadrada = function(punto) {
+    return Math.pow(aproximacion(x(punto)) - y(punto), 2);
+  }
+
+  var aproximar = aproximarLineal;
+
+  var diferenciasCuadradas = _.map(puntos, diferenciaCuadrada);
+  datos.push(yRaya, diferenciasCuadradas);
+  for(var i = 0; i<datos[0].length; i++) {
+    console.log(_.map(datos, function(columna) { return columna[i] }));
+  }
+
+  var errorCuadratico = _.sum(diferenciasCuadradas);
+  console.log(errorCuadratico);
+  graficarFuncion("(" + a + " * x) + " + b);
+  graficarSistemaDeEcuaciones(
+    ecuacionLineal([[sumaXCuadrados, 'a', sumaX, 'b', sumaXPorY], [sumaX, 'a', n(), 'b', sumaY]])
+  )
+};
+
+///////////////////////
+// Modelo cuadrático //
+///////////////////////
+
+var aproximarCuadratico = function() {
+  modeloCuadratico(puntos);
+}
+
+var modeloCuadratico = function(puntos) {
+  var xCuartas = _.map(puntos, xElevadoA(4));
+  var xCubos = _.map(puntos, xElevadoA(3));
+  var xCuadrados = _.map(puntos, xElevadoA(2));
+  var yPorXCuadrados = _.map(puntos, function(punto) { return y(punto) * xElevadoA(2)(punto) });
+  var xs = _.map(puntos, x);
+  var yPorX = _.map(puntos, function(punto) { return x(punto) * y(punto) });
+  var ys = _.map(puntos, y);
+
+  var sumaXCuarta = _.sum(xCuartas);
+  var sumaXCubo = _.sum(xCubos);
+  var sumaXCuadrado = _.sum(xCuadrados);
+  var sumaXPorYCuadrado = _.sum(yPorXCuadrados);
+  var sumaX = _.sum(xs);
+  var sumaYPorX = _.sum(yPorX);
+  var sumaY = _.sum(ys);
+  var coeficientes = [
+    [ sumaXCuarta, sumaXCubo, sumaXCuadrado, sumaXPorYCuadrado ],
+    [ sumaXCubo, sumaXCuadrado, sumaX, sumaYPorX ],
+    [ sumaXCuadrado, sumaX, n(), sumaY ]
+  ];
+  var a = determinante(d1(coeficientes)) / determinante(d(coeficientes));
+  var b = determinante(d2(coeficientes)) / determinante(d(coeficientes));
+  var c = determinante(d3(coeficientes)) / determinante(d(coeficientes));
+
+  graficarFuncion("(" + a + " * x^2) + (" + b + " * x) + " + c);
+}
+
+////////////////////////
+// Modelo exponencial //
+////////////////////////
 
 var aproximarExponencial = function() {
   var sumaXCuadrados = _.sum(_.map(puntos, xCuadrado));
@@ -302,8 +290,6 @@ var aproximarExponencial = function() {
   var sumaX = _.sum(_.map(puntos, x));
   var sumaY = _.sum(_.map(puntos, y));
   var sumaLnY = _.sum(_.map(puntos, lnY));
-
-  // REDONDEAR con .toPrecision()
 
   var losX = _.map(puntos, x);
   var losY = _.map(puntos, y);
@@ -334,15 +320,15 @@ var aproximarExponencial = function() {
   graficarFuncion(b  + " * " + Math.E + "^(" + a + " * x)");
 };
 
-// Modelo Potencial 
+//////////////////////
+// Modelo Potencial //
+//////////////////////
 
 var aproximarPotencial = function() {
   var sumaLnXCuadrados = _.sum(_.map(puntos, lnXCuadrado));
   var sumaLnY = _.sum(_.map(puntos, lnY));
   var sumaLnX = _.sum(_.map(puntos, lnX));
   var sumaLnXPorLnY = _.sum(_.map(puntos, lnXPorLnY));
-
-  // REDONDEAR con .toPrecision()
 
   var losX = _.map(puntos, x);
   var losY = _.map(puntos, y);
@@ -373,16 +359,15 @@ var aproximarPotencial = function() {
   graficarFuncion(b  + " * x^" + a );
 };
 
-
-// Modelo Hipérbola
+//////////////////////
+// Modelo Hipérbola //
+//////////////////////
 
 var aproximarHiperbola = function() {
   var sumaXCuadrados = _.sum(_.map(puntos, xCuadrado));
   var sumaXPorUnoDivididoY = _.sum(_.map(puntos, XPorUnoDivididoY));
   var sumaX = _.sum(_.map(puntos, x));
   var sumaUnoDivididoY = _.sum(_.map(puntos, unoDivididoY));
-
-  // REDONDEAR con .toPrecision()
 
   var losX = _.map(puntos, x);
   var losY = _.map(puntos, y);
@@ -412,3 +397,30 @@ var aproximarHiperbola = function() {
   console.log(errorCuadratico);
   graficarFuncion(a + "/" + "(" + b +" + x)");
 };
+
+/////////////
+// Eventos //
+/////////////
+
+window.addEventListener("load", function(event) {
+  board = JXG.JSXGraph.initBoard('jxgbox', {boundingbox:[-5,8,8,-5], axis:true});
+
+  var botonAgregarPunto = document.getElementById('agregarPunto');
+  botonAgregarPunto.addEventListener('click', agregarPuntoApretado);
+
+  tablaDeDatos = document.getElementById('tablaDeDatos');
+  ultimaFilaTabla = document.getElementById('filaNuevoPunto');
+
+  inlinePuntoX = document.getElementById('inlinePuntoX');
+  inlinePuntoY = document.getElementById('inlinePuntoY');
+
+  inputPrecision = document.getElementById('precision');
+
+  document.getElementById('botonAproximarLineal').addEventListener('click', aproximarLineal);
+  document.getElementById('botonAproximarCuadrado').addEventListener('click', aproximarCuadratico);
+  document.getElementById('botonAproximarExponencial').addEventListener('click', aproximarExponencial);
+  document.getElementById('botonAproximarPotencial').addEventListener('click', aproximarPotencial);
+  document.getElementById('botonAproximarHiperbola').addEventListener('click', aproximarHiperbola);
+
+  // [[1,1], [3,2], [4,4],[6,4], [8, 5],[9,7],[11,8],[14,9]].forEach(agregarPunto);
+});
