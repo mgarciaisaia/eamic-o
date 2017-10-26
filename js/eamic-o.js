@@ -6,7 +6,8 @@ var puntos = [];
 
 var board;
 var f, curve; // global objects
-var tablaDeDatos, ultimaFilaTabla;
+var tablaDeDatos, ultimaFilaTablaDeDatos;
+var tablaDeDatosConResultados, ultimaFilaTablaDeDatosConResultados;
 var inlinePuntoX, inlinePuntoY;
 var inputPrecision;
 
@@ -27,6 +28,7 @@ var xCuadrado = xElevadoA(2);
 var xCubo = xElevadoA(3);
 var xCuarta = xElevadoA(4);
 var xPorY = function(punto) { return redondear(x(punto) * y(punto)); }
+var xCuadradoPorY = function(punto) { return redondear(x(punto) * x(punto) * y(punto)); }
 var lnY = function(punto) { return redondear(Math.log(y(punto))); }
 var lnX = function(punto) { return redondear(Math.log(x(punto))); }
 var lnXPorLnY = function(punto) { return redondear(lnX(punto) * lnY(punto)); }
@@ -103,7 +105,7 @@ var graficarFuncion = function(ecuacion) {
   ],{name:ecuacion, withLabel:true});
 }
 
-var nuevaFilaTabla = function(punto) {
+var nuevaFilaTablaDatosConReusltados = function(punto) {
   var nuevaCelda = function(texto) {
     var celda = document.createElement('td');
     celda.textContent = texto;
@@ -113,6 +115,7 @@ var nuevaFilaTabla = function(punto) {
   fila.appendChild(nuevaCelda(x(punto)));
   fila.appendChild(nuevaCelda(y(punto)));
   fila.appendChild(nuevaCelda(xCuadrado(punto)));
+  fila.appendChild(nuevaCelda(xCuadradoPorY(punto)));
   fila.appendChild(nuevaCelda(xCubo(punto)));
   fila.appendChild(nuevaCelda(xCuarta(punto)));
   fila.appendChild(nuevaCelda(xPorY(punto)));
@@ -123,8 +126,18 @@ var nuevaFilaTabla = function(punto) {
   fila.appendChild(nuevaCelda(xPorLnY(punto)));
   fila.appendChild(nuevaCelda(unoDivididoY(punto)));
   fila.appendChild(nuevaCelda(XPorUnoDivididoY(punto)));
-  fila.appendChild(nuevaCelda());
-  fila.appendChild(nuevaCelda());
+  return fila;
+}
+
+var nuevaFilaTablaDatos = function(punto) {
+  var nuevaCelda = function(texto) {
+    var celda = document.createElement('td');
+    celda.textContent = texto;
+    return celda;
+  }
+  var fila = document.createElement('tr');
+  fila.appendChild(nuevaCelda(x(punto)));
+  fila.appendChild(nuevaCelda(y(punto)));
   return fila;
 }
 
@@ -134,7 +147,8 @@ var graficarPunto = function(punto) {
 
 var agregarPunto = function(punto) {
   puntos.push(punto);
-  ultimaFilaTabla.parentElement.insertBefore(nuevaFilaTabla(punto), ultimaFilaTabla);
+  ultimaFilaTablaDeDatos.parentElement.insertBefore(nuevaFilaTablaDatos(punto), ultimaFilaTablaDeDatos);
+  ultimaFilaTablaDeDatosConResultados.parentElement.insertBefore(nuevaFilaTablaDatosConReusltados(punto), ultimaFilaTablaDeDatosConResultados);
   graficarPunto(punto);
 }
 
@@ -204,6 +218,37 @@ var graficarSistemaDeEcuaciones = function(markupDeEcuaciones) {
 }
 
 
+function ocultarColumna(num, ver) {
+  fila = document.getElementById('tablaDeDatosConResultados').getElementsByTagName('tr');
+  //mostramos u ocultamos la cabecera de la columna
+  if (ver) {
+    fila[0].getElementsByTagName('th')[num].style.display='none';
+  } 
+  else {
+    fila[0].getElementsByTagName('th')[num].style.display='';
+  }
+  //mostramos u ocultamos las celdas de la columna seleccionada
+  for(i=1; i<fila.length-1; i++)
+  {
+    if (ver) {
+      fila[i].getElementsByTagName('td')[num].style.display='none';
+    }     
+    else {
+      fila[i].getElementsByTagName('td')[num].style.display=''; 
+    }      
+  }
+}
+
+function mostrarTablaDatosConResultados(ver) {
+  miDiv = document.getElementById('divDeProcesadorDatos');
+  if(ver) {
+    miDiv.style.display = '';
+  }
+  else {
+    miDiv.style.display = 'none';
+  }
+}
+
 ///////////////////
 // Modelo lineal //
 ///////////////////
@@ -228,8 +273,6 @@ var aproximarLineal = function() {
     return Math.pow(aproximacion(x(punto)) - y(punto), 2);
   }
 
-  var aproximar = aproximarLineal;
-
   var diferenciasCuadradas = _.map(puntos, diferenciaCuadrada);
   datos.push(yRaya, diferenciasCuadradas);
   for(var i = 0; i<datos[0].length; i++) {
@@ -242,6 +285,23 @@ var aproximarLineal = function() {
   graficarSistemaDeEcuaciones(
     ecuacionLineal([[sumaXCuadrados, 'a', sumaX, 'b', sumaXPorY], [sumaX, 'a', n(), 'b', sumaY]])
   )
+
+  mostrarTablaDatosConResultados(true);
+  ocultarColumna(0, false);
+  ocultarColumna(1, false);
+  ocultarColumna(2, false);
+  ocultarColumna(3, true);
+  ocultarColumna(4, true);
+  ocultarColumna(5, false);
+  ocultarColumna(6, true);
+  ocultarColumna(7, true);
+  ocultarColumna(8, true);
+  ocultarColumna(9, true);
+  ocultarColumna(10, true);
+  ocultarColumna(11, true);
+  ocultarColumna(12, true);
+  ocultarColumna(13, true);
+
 };
 
 ///////////////////////
@@ -278,6 +338,22 @@ var modeloCuadratico = function(puntos) {
   var c = determinante(d3(coeficientes)) / determinante(d(coeficientes));
 
   graficarFuncion("(" + a + " * x^2) + (" + b + " * x) + " + c);
+
+  mostrarTablaDatosConResultados(true);
+  ocultarColumna(0, false);
+  ocultarColumna(1, false);
+  ocultarColumna(2, false);
+  ocultarColumna(3, false);
+  ocultarColumna(4, false);
+  ocultarColumna(5, false);
+  ocultarColumna(6, false);
+  ocultarColumna(7, true);
+  ocultarColumna(8, true);
+  ocultarColumna(9, true);
+  ocultarColumna(10, true);
+  ocultarColumna(11, true);
+  ocultarColumna(12, true);
+  ocultarColumna(13, true);
 }
 
 ////////////////////////
@@ -318,6 +394,22 @@ var aproximarExponencial = function() {
   var errorCuadratico = _.sum(diferenciasCuadradas);
   console.log(errorCuadratico);
   graficarFuncion(b  + " * " + Math.E + "^(" + a + " * x)");
+
+  mostrarTablaDatosConResultados(true);
+  ocultarColumna(0, false);
+  ocultarColumna(1, false);
+  ocultarColumna(2, false);
+  ocultarColumna(3, true);
+  ocultarColumna(4, true);
+  ocultarColumna(5, true);
+  ocultarColumna(6, true);
+  ocultarColumna(7, true);
+  ocultarColumna(8, true);
+  ocultarColumna(9, false);
+  ocultarColumna(10, true);
+  ocultarColumna(11, false);
+  ocultarColumna(12, true);
+  ocultarColumna(13, true);
 };
 
 //////////////////////
@@ -357,6 +449,22 @@ var aproximarPotencial = function() {
   var errorCuadratico = _.sum(diferenciasCuadradas);
   console.log(errorCuadratico);
   graficarFuncion(b  + " * x^" + a );
+
+  mostrarTablaDatosConResultados(true);
+  ocultarColumna(0, false);
+  ocultarColumna(1, false);
+  ocultarColumna(2, true);
+  ocultarColumna(3, true);
+  ocultarColumna(4, true);
+  ocultarColumna(5, true);
+  ocultarColumna(6, true);
+  ocultarColumna(7, false);
+  ocultarColumna(8, false);
+  ocultarColumna(9, false);
+  ocultarColumna(10, false);
+  ocultarColumna(11, true);
+  ocultarColumna(12, true);
+  ocultarColumna(13, true);
 };
 
 //////////////////////
@@ -396,6 +504,22 @@ var aproximarHiperbola = function() {
   var errorCuadratico = _.sum(diferenciasCuadradas);
   console.log(errorCuadratico);
   graficarFuncion(a + "/" + "(" + b +" + x)");
+
+  mostrarTablaDatosConResultados(true);
+  ocultarColumna(0, false);
+  ocultarColumna(1, false);
+  ocultarColumna(2, false);
+  ocultarColumna(3, true);
+  ocultarColumna(4, true);
+  ocultarColumna(5, true);
+  ocultarColumna(6, true);
+  ocultarColumna(7, true);
+  ocultarColumna(8, true);
+  ocultarColumna(9, true);
+  ocultarColumna(10, true);
+  ocultarColumna(11, true);
+  ocultarColumna(12, false);
+  ocultarColumna(13, false);
 };
 
 /////////////
@@ -409,7 +533,10 @@ window.addEventListener("load", function(event) {
   botonAgregarPunto.addEventListener('click', agregarPuntoApretado);
 
   tablaDeDatos = document.getElementById('tablaDeDatos');
-  ultimaFilaTabla = document.getElementById('filaNuevoPunto');
+  ultimaFilaTablaDeDatos = document.getElementById('filaNuevoPunto');
+
+  tablaDeDatosConResultados = document.getElementById('tablaDeDatosConResultados');
+  ultimaFilaTablaDeDatosConResultados = document.getElementById('filaNuevoPuntoConResultados');
 
   inlinePuntoX = document.getElementById('inlinePuntoX');
   inlinePuntoY = document.getElementById('inlinePuntoY');
@@ -421,6 +548,4 @@ window.addEventListener("load", function(event) {
   document.getElementById('botonAproximarExponencial').addEventListener('click', aproximarExponencial);
   document.getElementById('botonAproximarPotencial').addEventListener('click', aproximarPotencial);
   document.getElementById('botonAproximarHiperbola').addEventListener('click', aproximarHiperbola);
-
-  // [[1,1], [3,2], [4,4],[6,4], [8, 5],[9,7],[11,8],[14,9]].forEach(agregarPunto);
 });
