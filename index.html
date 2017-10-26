@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta charset="utf-8">
+    <meta content='width=device-width, initial-scale=1, shrink-to-fit=no' name='viewport'>
     <link href="css/jsxgraph-0.99.6.css" rel="stylesheet" />
     <script type="text/javascript" src="js/lodash-4.17.4.min.js"></script>
     <script type="text/javascript" src="js/jsxgraphcore-0.99.6.js"></script>
@@ -12,49 +14,90 @@
     </script>
     <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
     <script type="text/javascript" src="js/eamic-o.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
     <style>
       #jxgbox_licenseText { display: none; }
     </style>
-    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0' name='viewport'>
   </head>
   <body>
-    <h1>eAMIC-O™</h1>
-    <label for="decimales">Cantidad de decimales</label>
-    <input name="decimales" id="precision" type="number" value="5" />
-    <p id="sistemaEcuaciones"></p>
-    <div class="puntosDeEntrada">
-      <h2>Puntos de entrada</h2>
-      <table id="tablaDeDatos">
-        <thead>
-          <th>`x`</th>
-          <th>`y`</th>
-          <th>`x^2`</th>
-          <th>`x^3`</th>
-          <th>`x^4`</th>
-          <th>`xy`</th>
-          <th>`ln(x)`</th>
-          <th>`ln(x)^2`</th>
-          <th>`ln(y)`</th>
-          <th>`ln(x)ln(y)`</th>
-          <th>`xln(y)`</th>
-          <th>`1/y`</th>
-          <th>`x 1/y`</th>
-          <th>`bar y`</th>
-          <th>`(bar y-y)^2`</th>
-        </thead>
-        <tr id="filaNuevoPunto">
-          <td><input type="number" name="x" id="nuevoX" /></td>
-          <td><input type="number" name="y" id="nuevoY" /></td>
-          <td></td>
-        </tr>
-      </table>
-      <input type="button" id="agregarPunto" value="Agregar" />
-    </div>
-    <input type="button" value="Lineal" id="botonAproximarLineal" />
-    <input type="button" value="Cuadrado" id="botonAproximarCuadrado" />
-    <input type="button" value="Exponencial" id="botonAproximarExponencial" />
-    <input type="button" value="Potencial" id="botonAproximarPotencial" />
-    <input type="button" value="Hiperbola" id="botonAproximarHiperbola" />
-    <div id="jxgbox" class="jxgbox" style="width:500px; height:500px;"></div>
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+      <a class="navbar-brand" href="#">eAMIC-O™</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsEamico" aria-controls="navbarsEamico" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarsEamico">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="#" id="botonAproximarLineal">Lineal</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" id="botonAproximarCuadrado">Cuadrado</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" id="botonAproximarExponencial">Exponencial</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" id="botonAproximarPotencial">Potencial</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" id="botonAproximarHiperbola">Hiperbola</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <main role="main" class="container">
+      <br><br><br>
+      <p>
+        <a class="btn btn-info" data-toggle="collapse" href="#collapseDecimales" aria-expanded="false" aria-controls="collapseDecimales">Configuraci&oacute;n</a>
+      </p>
+      <div class="collapse" id="collapseDecimales">
+        <div class="card border-info">
+          <div class="card-body">
+            <div class="form-row">
+              <div class="form-group col-md-6">
+                <label for="decimales">Cantidad de decimales</label>
+              </div>
+              <div class="form-group col-sm-6">
+                <input name="decimales" id="precision" type="number" value="5" class="form-control" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p id="sistemaEcuaciones"></p>
+      <div class="puntosDeEntrada">
+        <h2>Puntos de entrada</h2>
+        <table id="tablaDeDatos">
+          <thead>
+            <th>`x`</th>
+            <th>`y`</th>
+            <th>`x^2`</th>
+            <th>`x^3`</th>
+            <th>`x^4`</th>
+            <th>`xy`</th>
+            <th>`ln(x)`</th>
+            <th>`ln(x)^2`</th>
+            <th>`ln(y)`</th>
+            <th>`ln(x)ln(y)`</th>
+            <th>`xln(y)`</th>
+            <th>`1/y`</th>
+            <th>`x 1/y`</th>
+            <th>`bar y`</th>
+            <th>`(bar y-y)^2`</th>
+          </thead>
+          <tr id="filaNuevoPunto">
+            <td><input type="number" name="x" id="nuevoX" /></td>
+            <td><input type="number" name="y" id="nuevoY" /></td>
+            <td></td>
+          </tr>
+        </table>
+        <input type="button" id="agregarPunto" value="Agregar" />
+      </div>
+      <div id="jxgbox" class="jxgbox" style="width:500px; height:500px;"></div>
+    </main>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
   </body>
 </html>
