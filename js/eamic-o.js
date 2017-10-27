@@ -212,6 +212,19 @@ var ecuacionLineal = function(componentes) {
   "&", componentes[1][0], componentes[1][1], " + ", componentes[1][2], componentes[1][3], " = ", componentes[1][4], " \\end{cases} \\end{equation}"].join("")
 }
 
+var ecuacionCuadratica = function(componentes) {
+  return ["\\begin{equation} \\begin{cases} &", componentes[0][0], componentes[0][1], " + ", componentes[0][2], componentes[0][3], "+", componentes[0][4], componentes[0][5], " = ", componentes[0][6]," \\\\ ",
+  "&", componentes[1][0], componentes[1][1], " + ", componentes[1][2], componentes[1][3], "+", componentes[1][4], componentes[1][5], " = ", componentes[1][6]," \\\\ ",
+  "&", componentes[2][0], componentes[2][1], " + ", componentes[2][2], componentes[2][3], "+", componentes[2][4], componentes[2][5], " = ", componentes[2][6], " \\end{cases} \\end{equation}"].join("")
+}
+
+/*graficarSistemaDeEcuaciones(
+  ecuacionCuadratica([
+    [sumaXCuarta, 'a', sumaXCubo, 'b', sumaXCuadrado, 'c', sumaYPorXCuadrado], 
+    [sumaXCubo, 'a', sumaXCuadrado, 'b', sumaX, 'c', sumaYPorX],
+    [sumaXCuadrado, 'a', sumaX, 'b', n(), 'c', sumaY]
+  ])*/
+
 var graficarSistemaDeEcuaciones = function(markupDeEcuaciones) {
   document.getElementById('sistemaEcuaciones').textContent = markupDeEcuaciones;
   MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
@@ -281,7 +294,9 @@ var aproximarLineal = function() {
 
   var errorCuadratico = _.sum(diferenciasCuadradas);
   console.log(errorCuadratico);
+  
   graficarFuncion("(" + a + " * x) + " + b);
+  
   graficarSistemaDeEcuaciones(
     ecuacionLineal([[sumaXCuadrados, 'a', sumaX, 'b', sumaXPorY], [sumaX, 'a', n(), 'b', sumaY]])
   )
@@ -324,12 +339,12 @@ var modeloCuadratico = function(puntos) {
   var sumaXCuarta = _.sum(xCuartas);
   var sumaXCubo = _.sum(xCubos);
   var sumaXCuadrado = _.sum(xCuadrados);
-  var sumaXPorYCuadrado = _.sum(yPorXCuadrados);
+  var sumaYPorXCuadrado = _.sum(yPorXCuadrados);
   var sumaX = _.sum(xs);
   var sumaYPorX = _.sum(yPorX);
   var sumaY = _.sum(ys);
   var coeficientes = [
-    [ sumaXCuarta, sumaXCubo, sumaXCuadrado, sumaXPorYCuadrado ],
+    [ sumaXCuarta, sumaXCubo, sumaXCuadrado, sumaYPorXCuadrado ],
     [ sumaXCubo, sumaXCuadrado, sumaX, sumaYPorX ],
     [ sumaXCuadrado, sumaX, n(), sumaY ]
   ];
@@ -338,6 +353,14 @@ var modeloCuadratico = function(puntos) {
   var c = determinante(d3(coeficientes)) / determinante(d(coeficientes));
 
   graficarFuncion("(" + a + " * x^2) + (" + b + " * x) + " + c);
+  
+  graficarSistemaDeEcuaciones(
+    ecuacionCuadratica([
+      [sumaXCuarta, 'a', sumaXCubo, 'b', sumaXCuadrado, 'c', sumaYPorXCuadrado], 
+      [sumaXCubo, 'a', sumaXCuadrado, 'b', sumaX, 'c', sumaYPorX],
+      [sumaXCuadrado, 'a', sumaX, 'b', n(), 'c', sumaY]
+    ])
+  )
 
   mostrarTablaDatosConResultados(true);
   ocultarColumna(0, false);
