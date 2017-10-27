@@ -112,6 +112,7 @@ var nuevaFilaTablaDatosConReusltados = function(punto) {
     return celda;
   }
   var fila = document.createElement('tr');
+  fila.appendChild(nuevaCelda(n()));
   fila.appendChild(nuevaCelda(x(punto)));
   fila.appendChild(nuevaCelda(y(punto)));
   fila.appendChild(nuevaCelda(xCuadrado(punto)));
@@ -290,17 +291,20 @@ var aproximarLineal = function() {
   graficarFuncion("(" + a + " * x) + " + b);
   
   graficarSistemaDeEcuaciones(
-    ecuacionLineal([[sumaXCuadrados, 'a', sumaX, 'b', sumaXPorY], [sumaX, 'a', n(), 'b', sumaY]])
-  )
+    ecuacionLineal([
+      [sumaXCuadrados, 'a', sumaX, 'b', sumaXPorY], 
+      [sumaX, 'a', n(), 'b', sumaY]
+    ])
+  );
 
   mostrarTablaDatosConResultados(true);
   ocultarColumna(0, false);
   ocultarColumna(1, false);
   ocultarColumna(2, false);
-  ocultarColumna(3, true);
+  ocultarColumna(3, false);
   ocultarColumna(4, true);
-  ocultarColumna(5, false);
-  ocultarColumna(6, true);
+  ocultarColumna(5, true);
+  ocultarColumna(6, false);
   ocultarColumna(7, true);
   ocultarColumna(8, true);
   ocultarColumna(9, true);
@@ -308,6 +312,7 @@ var aproximarLineal = function() {
   ocultarColumna(11, true);
   ocultarColumna(12, true);
   ocultarColumna(13, true);
+  ocultarColumna(14, true);
 
 };
 
@@ -352,7 +357,7 @@ var modeloCuadratico = function(puntos) {
       [sumaXCubo, 'a', sumaXCuadrado, 'b', sumaX, 'c', sumaYPorX],
       [sumaXCuadrado, 'a', sumaX, 'b', n(), 'c', sumaY]
     ])
-  )
+  );
 
   mostrarTablaDatosConResultados(true);
   ocultarColumna(0, false);
@@ -362,13 +367,14 @@ var modeloCuadratico = function(puntos) {
   ocultarColumna(4, false);
   ocultarColumna(5, false);
   ocultarColumna(6, false);
-  ocultarColumna(7, true);
+  ocultarColumna(7, false);
   ocultarColumna(8, true);
   ocultarColumna(9, true);
   ocultarColumna(10, true);
   ocultarColumna(11, true);
   ocultarColumna(12, true);
   ocultarColumna(13, true);
+  ocultarColumna(14, true);
 }
 
 ////////////////////////
@@ -379,13 +385,11 @@ var aproximarExponencial = function() {
   var sumaXCuadrados = _.sum(_.map(puntos, xCuadrado));
   var sumaXPorLnY = _.sum(_.map(puntos, xPorLnY));
   var sumaX = _.sum(_.map(puntos, x));
-  var sumaY = _.sum(_.map(puntos, y));
   var sumaLnY = _.sum(_.map(puntos, lnY));
 
   var losX = _.map(puntos, x);
   var losY = _.map(puntos, y);
   var datos = [losX, losY, _.map(puntos, lnY), _.map(puntos, xCuadrado), _.map(puntos, xPorLnY)];
-
 
   var bMayuscula = (sumaXPorLnY - (sumaXCuadrados * sumaLnY / sumaX)) / (-(sumaXCuadrados * n()) / sumaX + sumaX) ;
   var aMayuscula = (sumaLnY - (n() * bMayuscula)) / sumaX;
@@ -409,22 +413,30 @@ var aproximarExponencial = function() {
   var errorCuadratico = _.sum(diferenciasCuadradas);
   console.log(errorCuadratico);
   graficarFuncion(b  + " * " + Math.E + "^(" + a + " * x)");
+  
+  graficarSistemaDeEcuaciones(
+    ecuacionLineal([
+      [sumaXCuadrados, 'a', sumaX, 'b', sumaXPorLnY], 
+      [sumaX, 'a', n(), 'b', sumaLnY]
+    ])
+  );
 
   mostrarTablaDatosConResultados(true);
   ocultarColumna(0, false);
   ocultarColumna(1, false);
   ocultarColumna(2, false);
-  ocultarColumna(3, true);
+  ocultarColumna(3, false);
   ocultarColumna(4, true);
   ocultarColumna(5, true);
   ocultarColumna(6, true);
   ocultarColumna(7, true);
   ocultarColumna(8, true);
-  ocultarColumna(9, false);
-  ocultarColumna(10, true);
-  ocultarColumna(11, false);
-  ocultarColumna(12, true);
+  ocultarColumna(9, true);
+  ocultarColumna(10, false);
+  ocultarColumna(11, true);
+  ocultarColumna(12, false);
   ocultarColumna(13, true);
+  ocultarColumna(14, true);
 };
 
 //////////////////////
@@ -440,7 +452,6 @@ var aproximarPotencial = function() {
   var losX = _.map(puntos, x);
   var losY = _.map(puntos, y);
   var datos = [losX, losY,  _.map(puntos, lnX), _.map(puntos, lnY), _.map(puntos, lnXCuadrado), _.map(puntos, lnXPorLnY)];
-
 
   var bMayuscula = (sumaLnXPorLnY - (sumaLnXCuadrados * sumaLnY / sumaLnX)) / (-(sumaLnXCuadrados * n()) / sumaLnX + sumaLnX) ;
   var aMayuscula = (sumaLnY - (n() * bMayuscula)) / sumaLnX;
@@ -464,22 +475,30 @@ var aproximarPotencial = function() {
   var errorCuadratico = _.sum(diferenciasCuadradas);
   console.log(errorCuadratico);
   graficarFuncion(b  + " * x^" + a );
+  
+  graficarSistemaDeEcuaciones(
+    ecuacionLineal([
+      [sumaLnXCuadrados, 'a', sumaLnX, 'b', sumaLnXPorLnY], 
+      [sumaLnX, 'a', n(), 'b', sumaLnY]
+    ])
+  );
 
   mostrarTablaDatosConResultados(true);
   ocultarColumna(0, false);
   ocultarColumna(1, false);
-  ocultarColumna(2, true);
+  ocultarColumna(2, false);
   ocultarColumna(3, true);
   ocultarColumna(4, true);
   ocultarColumna(5, true);
   ocultarColumna(6, true);
-  ocultarColumna(7, false);
+  ocultarColumna(7, true);
   ocultarColumna(8, false);
   ocultarColumna(9, false);
   ocultarColumna(10, false);
-  ocultarColumna(11, true);
+  ocultarColumna(11, false);
   ocultarColumna(12, true);
   ocultarColumna(13, true);
+  ocultarColumna(14, true);
 };
 
 //////////////////////
@@ -495,7 +514,6 @@ var aproximarHiperbola = function() {
   var losX = _.map(puntos, x);
   var losY = _.map(puntos, y);
   var datos = [losX, losY,  _.map(puntos, unoDivididoY), _.map(puntos, xCuadrado), _.map(puntos, XPorUnoDivididoY)];
-
 
   var bMayuscula = (sumaXPorUnoDivididoY - (sumaXCuadrados * sumaUnoDivididoY / sumaX)) / (-(sumaXCuadrados * n()) / sumaX + sumaX) ;
   var aMayuscula = (sumaUnoDivididoY - (n() * bMayuscula)) / sumaX;
@@ -519,12 +537,19 @@ var aproximarHiperbola = function() {
   var errorCuadratico = _.sum(diferenciasCuadradas);
   console.log(errorCuadratico);
   graficarFuncion(a + "/" + "(" + b +" + x)");
+  
+  graficarSistemaDeEcuaciones(
+    ecuacionLineal([
+      [sumaXCuadrados, 'a', sumaX, 'b', sumaXPorUnoDivididoY], 
+      [sumaX, 'a', n(), 'b', sumaUnoDivididoY]
+    ])
+  );
 
   mostrarTablaDatosConResultados(true);
   ocultarColumna(0, false);
   ocultarColumna(1, false);
   ocultarColumna(2, false);
-  ocultarColumna(3, true);
+  ocultarColumna(3, false);
   ocultarColumna(4, true);
   ocultarColumna(5, true);
   ocultarColumna(6, true);
@@ -533,8 +558,9 @@ var aproximarHiperbola = function() {
   ocultarColumna(9, true);
   ocultarColumna(10, true);
   ocultarColumna(11, true);
-  ocultarColumna(12, false);
+  ocultarColumna(12, true);
   ocultarColumna(13, false);
+  ocultarColumna(14, false);
 };
 
 /////////////
