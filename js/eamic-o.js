@@ -218,18 +218,10 @@ var ecuacionCuadratica = function(componentes) {
   "&", componentes[2][0], componentes[2][1], " + ", componentes[2][2], componentes[2][3], "+", componentes[2][4], componentes[2][5], " = ", componentes[2][6], " \\end{cases} \\end{equation}"].join("")
 }
 
-/*graficarSistemaDeEcuaciones(
-  ecuacionCuadratica([
-    [sumaXCuarta, 'a', sumaXCubo, 'b', sumaXCuadrado, 'c', sumaYPorXCuadrado], 
-    [sumaXCubo, 'a', sumaXCuadrado, 'b', sumaX, 'c', sumaYPorX],
-    [sumaXCuadrado, 'a', sumaX, 'b', n(), 'c', sumaY]
-  ])*/
-
 var graficarSistemaDeEcuaciones = function(markupDeEcuaciones) {
   document.getElementById('sistemaEcuaciones').textContent = markupDeEcuaciones;
   MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 }
-
 
 function ocultarColumna(num, ver) {
   fila = document.getElementById('tablaDeDatosConResultados').getElementsByTagName('tr');
