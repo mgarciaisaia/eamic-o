@@ -224,6 +224,30 @@ var graficarSistemaDeEcuaciones = function(markupDeEcuaciones) {
   MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 }
 
+var funcionLineal = function(componentes) {
+  return "`y = " + componentes[0] + "x + " + componentes[1] + "`";
+}
+
+var funcionCuadratica = function(componentes) {
+  return "`y = " + componentes[0] + "x^2 + " + componentes[1] + "x + " + componentes[2]  + "`";
+}
+
+var funcionExponencial = function(componentes) {
+  return "`y = " + componentes[1] + "e^(" + componentes[0] + "x)`";
+}
+
+var funcionPotencial = function(componentes) {
+  return "`y = " + componentes[1] + "x^" + componentes[0] + "`";
+}
+
+var funcionHiperbola = function(componentes) {
+  return "`y = " + componentes[0] + "/(" + componentes[1] + "+ x)`";
+}
+
+var escribirFuncion = function(markupDeEcuaciones) {
+  document.getElementById('funcion').textContent = markupDeEcuaciones;
+}
+
 function ocultarColumna(num, ver) {
   fila = document.getElementById('tablaDeDatosConResultados').getElementsByTagName('tr');
   //mostramos u ocultamos la cabecera de la columna
@@ -270,8 +294,8 @@ var aproximarLineal = function() {
   var datos = [losX, losY, _.map(puntos, xCuadrado), _.map(puntos, xPorY)];
 
 
-  var b = (sumaXPorY - (sumaXCuadrados * sumaY / sumaX)) / (- (sumaXCuadrados * n() / sumaX) + sumaX);
-  var a = (sumaY - (n() * b)) / sumaX;
+  var b = redondear((sumaXPorY - (sumaXCuadrados * sumaY / sumaX)) / (- (sumaXCuadrados * n() / sumaX) + sumaX));
+  var a = redondear((sumaY - (n() * b)) / sumaX);
   var aproximacion = function(x) { return (a * x) + b };
 
   var yRaya = _.map(losX, aproximacion);
@@ -287,6 +311,8 @@ var aproximarLineal = function() {
 
   var errorCuadratico = _.sum(diferenciasCuadradas);
   console.log(errorCuadratico);
+
+  escribirFuncion(funcionLineal([a,b]));
   
   graficarFuncion("(" + a + " * x) + " + b);
   
@@ -345,11 +371,13 @@ var modeloCuadratico = function(puntos) {
     [ sumaXCubo, sumaXCuadrado, sumaX, sumaYPorX ],
     [ sumaXCuadrado, sumaX, n(), sumaY ]
   ];
-  var a = determinante(d1(coeficientes)) / determinante(d(coeficientes));
-  var b = determinante(d2(coeficientes)) / determinante(d(coeficientes));
-  var c = determinante(d3(coeficientes)) / determinante(d(coeficientes));
+  var a = redondear(determinante(d1(coeficientes)) / determinante(d(coeficientes)));
+  var b = redondear(determinante(d2(coeficientes)) / determinante(d(coeficientes)));
+  var c = redondear(determinante(d3(coeficientes)) / determinante(d(coeficientes)));
 
   graficarFuncion("(" + a + " * x^2) + (" + b + " * x) + " + c);
+  
+  escribirFuncion(funcionCuadratica([a,b,c]));
   
   graficarSistemaDeEcuaciones(
     ecuacionCuadratica([
@@ -394,8 +422,8 @@ var aproximarExponencial = function() {
   var bMayuscula = (sumaXPorLnY - (sumaXCuadrados * sumaLnY / sumaX)) / (-(sumaXCuadrados * n()) / sumaX + sumaX) ;
   var aMayuscula = (sumaLnY - (n() * bMayuscula)) / sumaX;
 
-  var a = aMayuscula;
-  var b = Math.exp(bMayuscula);
+  var a = redondear(aMayuscula);
+  var b = redondear(Math.exp(bMayuscula));
 
   var aproximacion = function(x) { return b * Math.exp(a * x) };
 
@@ -413,6 +441,8 @@ var aproximarExponencial = function() {
   var errorCuadratico = _.sum(diferenciasCuadradas);
   console.log(errorCuadratico);
   graficarFuncion(b  + " * " + Math.E + "^(" + a + " * x)");
+
+  escribirFuncion(funcionExponencial([a,b]));
   
   graficarSistemaDeEcuaciones(
     ecuacionLineal([
@@ -456,8 +486,8 @@ var aproximarPotencial = function() {
   var bMayuscula = (sumaLnXPorLnY - (sumaLnXCuadrados * sumaLnY / sumaLnX)) / (-(sumaLnXCuadrados * n()) / sumaLnX + sumaLnX) ;
   var aMayuscula = (sumaLnY - (n() * bMayuscula)) / sumaLnX;
 
-  var a = aMayuscula;
-  var b = Math.exp(bMayuscula);
+  var a = redondear(aMayuscula);
+  var b = redondear(Math.exp(bMayuscula));
 
   var aproximacion = function(x) { return b * Math.pow(x, a)};
 
@@ -476,6 +506,8 @@ var aproximarPotencial = function() {
   console.log(errorCuadratico);
   graficarFuncion(b  + " * x^" + a );
   
+  escribirFuncion(funcionPotencial([a,b]));
+
   graficarSistemaDeEcuaciones(
     ecuacionLineal([
       [sumaLnXCuadrados, 'a', sumaLnX, 'b', sumaLnXPorLnY], 
@@ -518,8 +550,8 @@ var aproximarHiperbola = function() {
   var bMayuscula = (sumaXPorUnoDivididoY - (sumaXCuadrados * sumaUnoDivididoY / sumaX)) / (-(sumaXCuadrados * n()) / sumaX + sumaX) ;
   var aMayuscula = (sumaUnoDivididoY - (n() * bMayuscula)) / sumaX;
 
-  var a = 1/aMayuscula;
-  var b = bMayuscula * a;
+  var a = redondear(1/aMayuscula);
+  var b = redondear(bMayuscula * a);
 
   var aproximacion = function(x) { return a/ (b + x)};
 
@@ -537,6 +569,8 @@ var aproximarHiperbola = function() {
   var errorCuadratico = _.sum(diferenciasCuadradas);
   console.log(errorCuadratico);
   graficarFuncion(a + "/" + "(" + b +" + x)");
+  
+  escribirFuncion(funcionHiperbola([a,b]));
   
   graficarSistemaDeEcuaciones(
     ecuacionLineal([
