@@ -284,16 +284,16 @@ function mostrarTablaDatosConResultados(ver) {
 ///////////////////
 
 var aproximarLineal = function() {
-  var sumaXCuadrados = _.sum(_.map(puntos, xCuadrado));
-  var sumaXPorY = _.sum(_.map(puntos, xPorY));
-  var sumaX = _.sum(_.map(puntos, x));
-  var sumaY = _.sum(_.map(puntos, y));
+  var sumaXCuadrados = redondear(_.sum(_.map(puntos, xCuadrado)));
+  var sumaXPorY = redondear(_.sum(_.map(puntos, xPorY)));
+  var sumaX = redondear(_.sum(_.map(puntos, x)));
+  var sumaY = redondear(_.sum(_.map(puntos, y)));
 
   var losX = _.map(puntos, x);
   var losY = _.map(puntos, y);
   var datos = [losX, losY, _.map(puntos, xCuadrado), _.map(puntos, xPorY)];
 
-
+  //var b = redondear( (((sumaXPorY*sumaXCuadrados)/((sumaX)^2))/(1-((n()*sumaXCuadrados)/((sumaX)^2)))) )
   var b = redondear((sumaXPorY - (sumaXCuadrados * sumaY / sumaX)) / (- (sumaXCuadrados * n() / sumaX) + sumaX));
   var a = redondear((sumaY - (n() * b)) / sumaX);
   var aproximacion = function(x) { return (a * x) + b };
@@ -351,13 +351,13 @@ var aproximarCuadratico = function() {
 }
 
 var modeloCuadratico = function(puntos) {
-  var xCuartas = _.map(puntos, xElevadoA(4));
-  var xCubos = _.map(puntos, xElevadoA(3));
-  var xCuadrados = _.map(puntos, xElevadoA(2));
-  var yPorXCuadrados = _.map(puntos, function(punto) { return y(punto) * xElevadoA(2)(punto) });
-  var xs = _.map(puntos, x);
-  var yPorX = _.map(puntos, function(punto) { return x(punto) * y(punto) });
-  var ys = _.map(puntos, y);
+  var xCuartas = redondear(_.map(puntos, xElevadoA(4)));
+  var xCubos = redondear(_.map(puntos, xElevadoA(3)));
+  var xCuadrados = redondear(_.map(puntos, xElevadoA(2)));
+  var yPorXCuadrados = redondear(_.map(puntos, function(punto) { return redondear(y(punto) * xElevadoA(2)(punto)) }));
+  var xs = redondear(_.map(puntos, x));
+  var yPorX = redondear(_.map(puntos, function(punto) { return x(punto) * y(punto) }));
+  var ys = redondear(_.map(puntos, y));
 
   var sumaXCuarta = _.sum(xCuartas);
   var sumaXCubo = _.sum(xCubos);
@@ -410,19 +410,20 @@ var modeloCuadratico = function(puntos) {
 ////////////////////////
 
 var aproximarExponencial = function() {
-  var sumaXCuadrados = _.sum(_.map(puntos, xCuadrado));
-  var sumaXPorLnY = _.sum(_.map(puntos, xPorLnY));
-  var sumaX = _.sum(_.map(puntos, x));
-  var sumaLnY = _.sum(_.map(puntos, lnY));
+  var sumaXCuadrados = redondear(_.sum(_.map(puntos, xCuadrado)));
+  var sumaXPorLnY = redondear(_.sum(_.map(puntos, xPorLnY)));
+  var sumaX = redondear(_.sum(_.map(puntos, x)));
+  var sumaLnY = redondear(_.sum(_.map(puntos, lnY)));
+
+  console.log(sumaLnY);
 
   var losX = _.map(puntos, x);
   var losY = _.map(puntos, y);
   var datos = [losX, losY, _.map(puntos, lnY), _.map(puntos, xCuadrado), _.map(puntos, xPorLnY)];
 
-  var bMayuscula = (sumaXPorLnY - (sumaXCuadrados * sumaLnY / sumaX)) / (-(sumaXCuadrados * n()) / sumaX + sumaX) ;
-  var aMayuscula = (sumaLnY - (n() * bMayuscula)) / sumaX;
+  var bMayuscula = redondear((sumaXPorLnY - (sumaXCuadrados * sumaLnY / sumaX)) / (- (sumaXCuadrados * n() / sumaX) + sumaX));
+  var a = redondear((sumaLnY - (n() * bMayuscula)) / sumaX);
 
-  var a = redondear(aMayuscula);
   var b = redondear(Math.exp(bMayuscula));
 
   var aproximacion = function(x) { return b * Math.exp(a * x) };
@@ -474,19 +475,18 @@ var aproximarExponencial = function() {
 //////////////////////
 
 var aproximarPotencial = function() {
-  var sumaLnXCuadrados = _.sum(_.map(puntos, lnXCuadrado));
-  var sumaLnY = _.sum(_.map(puntos, lnY));
-  var sumaLnX = _.sum(_.map(puntos, lnX));
-  var sumaLnXPorLnY = _.sum(_.map(puntos, lnXPorLnY));
+  var sumaLnXCuadrados = redondear(_.sum(_.map(puntos, lnXCuadrado)));
+  var sumaLnY = redondear(_.sum(_.map(puntos, lnY)));
+  var sumaLnX = redondear(_.sum(_.map(puntos, lnX)));
+  var sumaLnXPorLnY = redondear(_.sum(_.map(puntos, lnXPorLnY)));
 
   var losX = _.map(puntos, x);
   var losY = _.map(puntos, y);
   var datos = [losX, losY,  _.map(puntos, lnX), _.map(puntos, lnY), _.map(puntos, lnXCuadrado), _.map(puntos, lnXPorLnY)];
 
-  var bMayuscula = (sumaLnXPorLnY - (sumaLnXCuadrados * sumaLnY / sumaLnX)) / (-(sumaLnXCuadrados * n()) / sumaLnX + sumaLnX) ;
-  var aMayuscula = (sumaLnY - (n() * bMayuscula)) / sumaLnX;
+  var bMayuscula = redondear((sumaLnXPorLnY - (sumaLnXCuadrados * sumaLnY / sumaLnX)) / (- (sumaLnXCuadrados * n() / sumaLnX) + sumaLnX));
+  var a = redondear((sumaLnY - (n() * bMayuscula)) / sumaLnX);
 
-  var a = redondear(aMayuscula);
   var b = redondear(Math.exp(bMayuscula));
 
   var aproximacion = function(x) { return b * Math.pow(x, a)};
@@ -538,10 +538,10 @@ var aproximarPotencial = function() {
 //////////////////////
 
 var aproximarHiperbola = function() {
-  var sumaXCuadrados = _.sum(_.map(puntos, xCuadrado));
-  var sumaXPorUnoDivididoY = _.sum(_.map(puntos, XPorUnoDivididoY));
-  var sumaX = _.sum(_.map(puntos, x));
-  var sumaUnoDivididoY = _.sum(_.map(puntos, unoDivididoY));
+  var sumaXCuadrados = redondear(_.sum(_.map(puntos, xCuadrado)));
+  var sumaXPorUnoDivididoY = redondear(_.sum(_.map(puntos, XPorUnoDivididoY)));
+  var sumaX = redondear(_.sum(_.map(puntos, x)));
+  var sumaUnoDivididoY = redondear(_.sum(_.map(puntos, unoDivididoY)));
 
   var losX = _.map(puntos, x);
   var losY = _.map(puntos, y);
