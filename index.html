@@ -28,26 +28,26 @@
       <div class="collapse navbar-collapse" id="navbarsEamico">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item">
-            <a class="nav-link" href="#" id="botonAproximarLineal">Recta</a>
+            <a class="nav-link" href="#aproximacion" id="aproximacion">Aproximaci&oacute;n</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#" id="botonAproximarCuadrado">Parábola</a>
+            <a class="nav-link" href="#comparacion" id="comparacion">Comparaci&oacute;n</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#" id="botonAproximarExponencial">Exponencial</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#" id="botonAproximarPotencial">Potencial</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#" id="botonAproximarHiperbola">Hiperbola</a>
+            <a class="nav-link" href="#limpiar" id="limpiar">Limpiar datos</a>
           </li>
         </ul>
       </div>
     </nav>
     <main role="main">
-      <br>
-      <div class="container my-5">
+      <br><br><br>
+      <div class="container-fluid">
+        <!--<div class="row flex-xl-nowrap">
+          <div class="col-12 col-md-3 col-xl-2">
+            <span>Ingreso de puntos</span>
+          </div>
+          <div class="col-12 col-md-9 col-xl-10" role="main">b</div>
+        </div>-->
         <div class="row">
           <div class="col-sm">
             <h3>Ingreso datos</h3>
@@ -82,10 +82,10 @@
           </div>
         </div>
         <div class="row my-4">
-          <div class="col-sm-4">
+          <div class="col-sm-6">
             <h3>Tabla de puntos discretos</h3>
             <div class="table-responsive" style="max-height: 230px">
-              <table class="table table-striped table-bordered" id="tablaDeDatos">
+              <table class="table table-striped table-bordered table-hover" id="tablaDeDatos">
                 <thead class="thead-light">
                   <th>`x`</th>
                   <th>`y`</th>
@@ -96,22 +96,47 @@
                 </tbody>
               </table>
             </div>
-            <h3 class="my-2">Sistema de ecuaciones</h3>
+          </div>
+          <div class="col-sm-6">
+            <h3>Sistema de ecuaciones</h3>
             <div id="sistemaEcuaciones"></div>
             <div id="funcion"></div>
           </div>
-          <div class="col-sm-8">
+        </div>
+        <div class="row">
+          <div class="col">
             <h3>Gr&aacute;fica</h3>
             <div class="embed-responsive">
               <div id="jxgbox" class="jxgbox" style="height:400px;"></div>
             </div>
           </div>
         </div>
+        <div class="row my-4">
+          <div class="col">
+            <ul class="nav nav-tabs nav-justified" id="tabEcuaciones" role="tablist">
+              <li class="nav-item">
+                <a class="nav-link" href="#lineal" id="botonAproximarLineal" data-toggle="tab" role="tab" aria-controls="lineal" aria-selected="false">Lineal</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#parabola" id="botonAproximarCuadrado" data-toggle="tab" role="tab" aria-controls="parabola" aria-selected="false">Par&aacute;bola</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#exponencial" id="botonAproximarExponencial" data-toggle="tab" role="tab" aria-controls="exponencial" aria-selected="false">Exponencial</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#potencial" id="botonAproximarPotencial" data-toggle="tab" role="tab" aria-controls="potencial" aria-selected="false">Potencial</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#hiperbola" id="botonAproximarHiperbola" data-toggle="tab" role="tab" aria-controls="hiperbola" aria-selected="false">Hip&eacute;rbola</a>
+              </li>
+            </ul>
+          </div>
+        </div>
         <div class="row" style="display:none;" id="divDeProcesadorDatos"> 
           <div class="col">
-            <h3 >Procesador de datos</h3>
-            <div class="table-responsive" style="max-height: 250px">
-              <table class="table table-striped table-bordered" id="tablaDeDatosConResultados">
+            <h3>Procesador de datos</h3>
+            <div class="table-responsive">
+              <table class="table table-striped table-bordered table-hover" id="tablaDeDatosConResultados">
                 <thead class="thead-light">
                   <th>`n`</th>
                   <th>`x`</th>
